@@ -61,8 +61,8 @@ $(function() {
         * hiding/showing of the menu element.
         */
         it('has initial class "menu-hidden"', function() {
-            var bodyClass = document.getElementsByTagName("body")[0].className;
-            expect(bodyClass).toContain('menu-hidden');
+            var body = $('body');
+            expect(body.hasClass('menu-hidden')).toBe(true);
         });
 
 
@@ -100,7 +100,7 @@ $(function() {
         });
 
         it('have at least a single .entry element within the .feed container', function() {
-            expect($('.feed').find('.entry').length).not.toBe(0);
+            expect($('.feed .entry').length).not.toBe(0);
         });
     });
 
@@ -112,13 +112,16 @@ $(function() {
         * Remember, loadFeed() is asynchronous.
         */
         beforeEach(function(done) {
-           loadFeed(0, done);
-           initialContent = $('.feed').html();
-           loadFeed(2, done);
+           loadFeed(0, function() {
+               initialContent = $('.feed').html();
+               loadFeed(1, function() {
+                   newFeedContent = $('.feed').html();
+                   done();
+               });
+           });
         });
 
         it('changes content', function(done) {
-           newFeedContent = $('.feed').html();
            expect(initialContent).not.toBe(newFeedContent);
            done();
         });
